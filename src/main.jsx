@@ -9,8 +9,8 @@ ReactDOM.createRoot(document.getElementById("root")).render(
   </React.StrictMode>
 );
 
-// Register the service worker after load so it never delays first paint.
-if ("serviceWorker" in navigator) {
+// Register the service worker only for production so it cannot cache Vite dev assets.
+if (import.meta.env.PROD && "serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     navigator.serviceWorker
       .register("/sw.js")

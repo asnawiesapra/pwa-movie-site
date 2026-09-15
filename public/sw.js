@@ -5,7 +5,7 @@
    3. Posters    -> cache-first  (images never change for a given URL)
 */
 
-const VERSION = "v1";
+const VERSION = "v2";
 const SHELL_CACHE = `shell-${VERSION}`;
 const API_CACHE = `api-${VERSION}`;
 const IMG_CACHE = `img-${VERSION}`;

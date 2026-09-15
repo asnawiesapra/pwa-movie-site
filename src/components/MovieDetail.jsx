@@ -72,7 +72,9 @@ export default function MovieDetail({ movie, onClose }) {
       .catch((err) => {
         if (err.name !== "AbortError") setExtras({ runtime: null, genres: [], tagline: "", trailerKey: null });
       })
-      .finally(() => setExtrasLoading(false));
+      .finally(() => {
+        if (!controller.signal.aborted) setExtrasLoading(false);
+      });
 
     return () => controller.abort();
   }, [movie.id]);

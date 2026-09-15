@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Header from "./components/Header.jsx";
 import SearchBar from "./components/SearchBar.jsx";
 import MovieList from "./components/MovieList.jsx";
@@ -16,22 +16,28 @@ export default function App() {
   const [error, setError] = useState(null);
   const [selected, setSelected] = useState(null);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const requestIdRef = useRef(0);
 
   // Search only fires 500ms after typing stops.
   const debouncedSearch = useDebounce(search, 500);
 
   // --- Data fetching -------------------------------------------------------
   const loadMovies = useCallback((query, signal) => {
+    const requestId = ++requestIdRef.current;
     setLoading(true);
     setError(null);
 
     fetchMovies(query, signal)
-      .then((results) => setMovies(results))
+      .then((results) => {
+        if (requestId === requestIdRef.current) setMovies(results);
+      })
       .catch((err) => {
-        if (err.name === "AbortError") return; // a newer request replaced this one
+        if (err.name === "AbortError" || requestId !== requestIdRef.current) return;
         setError(err.message || "Failed to fetch movies. Check your connection.");
       })
-      .finally(() => setLoading(false));
+      .finally(() => {
+        if (requestId === requestIdRef.current) setLoading(false);
+      });
   }, []);
 
   // Runs on mount and whenever the debounced search term changes.
